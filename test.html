@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <title>My first three.js app</title>
+    <style>
+    body {
+        margin: 0;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%
+    }
+    </style>
+</head>
+
+<body>
+    <script src="./three.js"></script>
+    <script type="text/javascript" src='./OrbitControls.js'></script>
+    <script type="text/javascript" src='./dat.gui.js'></script>
+    <script>
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(0xEEEEEE, 1.0);
+    renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    var axes = new THREE.AxesHelper(20);
+    scene.add(axes);
+
+    var planeGeometry = new THREE.PlaneGeometry(60, 20);
+    var planeMaterisl = new THREE.MeshLambertMaterial({
+        color: 0xcccccc
+    })
+    var plane = new THREE.Mesh(planeGeometry, planeMaterisl);
+    plane.rotation.x = -0.5 * Math.PI;
+    plane.position.x = 15;
+    plane.position.y = 0;
+    plane.position.z = 0;
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    camera.position.set(-30, 40, 30)
+    camera.lookAt(scene.position);
+
+    var spotLight = new THREE.SpotLight(0xffffff);
+    spotLight.position.set(-40, 60, -10);
+    spotLight.castShadow = true;
+    scene.add(spotLight);
+
+    var cubeGeometry = new THREE.SphereBufferGeometry(5, 20, 20);
+    var cubeMaterial = new THREE.MeshLambertMaterial({
+        color: (0xff0000)
+    })
+    var helper = new THREE.CameraHelper(spotLight.shadow.camera);
+    scene.add(helper);
+    var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+    cube.castShadow = true;
+    scene.add(cube);
+    var step = 0;
+
+
+    var controls = new function() {
+        this.rotationSpeed = 0.02;
+        this.bouncingSpeed = 0.03;
+    }
+    var gui = new dat.GUI();
+    gui.add(controls, 'bouncingSpeed', 0, 0.5);
+
+    // var controls = new THREE.OrbitControls(camera);
+    // controls.update();
+
+    function render() {
+
+        step += controls.bouncingSpeed;
+        cube.position.x = 20 + (10 * (Math.cos(step)))
+        cube.position.y = 2 + (10 * Math.abs(Math.sin(step)))
+        requestAnimationFrame(render);
+        // controls.update();
+        renderer.render(scene, camera);
+    }
+
+
+    render();
+    </script>
+</body>
+
+</html>
