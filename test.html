@@ -52,13 +52,15 @@
     spotLight.castShadow = true;
     scene.add(spotLight);
 
-    var cubeGeometry = new THREE.SphereBufferGeometry(5, 20, 20);
+    var cubeGeometry = new THREE.SphereBufferGeometry(7, 20, 20);
+    console.log(cubeGeometry);
     var cubeMaterial = new THREE.MeshLambertMaterial({
         color: (0xff0000)
     })
     var helper = new THREE.CameraHelper(spotLight.shadow.camera);
     scene.add(helper);
-    var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+    var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    // console.log(cube.geometry);
     cube.castShadow = true;
     scene.add(cube);
     var step = 0;

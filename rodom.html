@@ -1,0 +1,163 @@
+<html>
+
+<head>
+    <title>My first three.js app</title>
+    <style>
+    body {
+        margin: 0;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%
+    }
+    </style>
+</head>
+
+<body>
+    <script src="./three.js"></script>
+    <script type="text/javascript" src='./OrbitControls.js'></script>
+    <script type="text/javascript" src='./dat.gui.js'></script>
+    <script>
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    var renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+    renderer.setClearColor(0xEEEEEE, 1.0);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    var axes = new THREE.AxesHelper(20);
+    scene.add(axes);
+
+    var planeGeometry = new THREE.PlaneGeometry(60, 20);
+    var planeMaterisl = new THREE.MeshLambertMaterial({
+        color: 0xcccccc
+    })
+    var plane = new THREE.Mesh(planeGeometry, planeMaterisl);
+    plane.rotation.x = -0.5 * Math.PI;
+    plane.position.x = 15;
+    plane.position.y = 0;
+    plane.position.z = 0;
+    // plane.receiveShadow = true;
+    // scene.add(plane);
+
+    camera.position.set(-10, 10, 30)
+    camera.lookAt(scene.position);
+
+    // var spotLight = new THREE.SpotLight(0xffffff);
+    var spotLight = new THREE.DirectionalLight(0xffffff);
+    spotLight.position.set(-40, 60, -10);
+    // spotLight.castShadow = true;
+    scene.add(spotLight);
+
+
+
+
+    // var cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
+
+    // var cubeGeometry = new THREE.DodecahedronGeometry(5);
+    // var cubeGeometry = new THREE.ConeGeometry(5, 10, 10, 5);
+    // var cubeGeometry = new THREE.CylinderGeometry(2, 3, 10, 10, 2);
+    var cubeGeometry = new THREE.IcosahedronGeometry(5, 2);
+
+
+    cubeGeometry.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
+    var cubeMaterial = new THREE.MeshPhongMaterial({
+        // wireframe: true,
+        color: 0x3cc33c,
+        flatShading: true,
+    });
+
+
+
+
+
+    // 获得顶点
+    var l = cubeGeometry.vertices.length;
+    console.log(cubeGeometry.vertices);
+    // 创建一个新的数组存储与每个顶点关联的值：
+    var waves = [];
+
+    for (var i = 0; i < l; i++) {
+        // 获取每个顶点
+        var v = cubeGeometry.vertices[i];
+
+        // 存储一些关联的数值
+        waves.push({
+            y: v.y,
+            x: v.x,
+            z: v.z,
+            // 随机角度
+            ang: Math.random() * Math.PI / 2,
+            // 随机距离
+            amp: Math.random() * 2,
+            // 在0.016至0.048度/帧之间的随机速度
+            speed: 0.016 + Math.random() * 0.032
+        });
+    };
+    console.log(waves);
+    console.log(Math.cos(180));
+    var d = cubeGeometry.vertices;
+
+    for (var i = 0; i < l; i++) {
+        var v = d[i];
+
+        // 获取关联的值
+        var vprops = this.waves[i];
+
+        // 更新顶点的位置
+        if (v.x >= 0) {
+            v.x = vprops.x + Math.cos(vprops.ang) * vprops.amp;
+        } else {
+            v.x = vprops.x - Math.cos(vprops.ang) * vprops.amp;
+        }
+
+        if (v.y >= 0) {
+            v.y = vprops.y + Math.sin(vprops.ang) * vprops.amp;
+        } else {
+            v.y = vprops.y - Math.sin(vprops.ang) * vprops.amp;
+        }
+    }
+
+    cubeGeometry.mergeVertices();
+
+    var helper = new THREE.CameraHelper(spotLight.shadow.camera);
+    scene.add(helper);
+    var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    scene.add(cube);
+
+
+
+
+
+
+    var step = 0;
+    var controls = new function() {
+        this.rotationSpeed = 0.02;
+        this.bouncingSpeed = 0.03;
+    }
+    var gui = new dat.GUI();
+    gui.add(controls, 'bouncingSpeed', 0, 0.5);
+
+    var controls = new THREE.OrbitControls(camera);
+    controls.update();
+
+    function render() {
+
+        step += controls.bouncingSpeed;
+        // cube.position.x = 20 + (10 * (Math.cos(step)))
+        // cube.position.x = step;
+        requestAnimationFrame(render);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+
+    render();
+    </script>
+</body>
+
+</html>
