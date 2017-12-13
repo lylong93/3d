@@ -74,53 +74,82 @@
 
 
 
-
-    // 获得顶点
-    var l = cubeGeometry.vertices.length;
-    console.log(cubeGeometry.vertices);
-    // 创建一个新的数组存储与每个顶点关联的值：
-    var waves = [];
-
-    for (var i = 0; i < l; i++) {
-        // 获取每个顶点
-        var v = cubeGeometry.vertices[i];
-
-        // 存储一些关联的数值
-        waves.push({
-            y: v.y,
-            x: v.x,
-            z: v.z,
-            // 随机角度
-            ang: Math.random() * Math.PI / 2,
-            // 随机距离
-            amp: Math.random() * 2,
-            // 在0.016至0.048度/帧之间的随机速度
-            speed: 0.016 + Math.random() * 0.032
+    var manager = new THREE.LoadingManager();
+    var loader = new THREE.JSONLoader();
+    loader.load('./ok.js', function(geometry) {
+        var material = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            morphTargets: true,
+            vertexColors: THREE.FaceColors,
+            flatShading: true
         });
-    };
-    console.log(waves);
-    console.log(Math.cos(180));
-    var d = cubeGeometry.vertices;
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = -150;
+        mesh.position.y = 150;
+        mesh.scale.set(1.5, 1.5, 1.5);
+        scene.add(mesh);
+    }, function(xhr) {
+        console.log((xhr.loaded / xhr.total * 100) + '%loaded');
+    })
 
-    for (var i = 0; i < l; i++) {
-        var v = d[i];
 
-        // 获取关联的值
-        var vprops = this.waves[i];
 
-        // 更新顶点的位置
-        if (v.x >= 0) {
-            v.x = vprops.x + Math.cos(vprops.ang) * vprops.amp;
-        } else {
-            v.x = vprops.x - Math.cos(vprops.ang) * vprops.amp;
+
+
+
+
+
+
+
+
+
+    function change(obj) {
+        var l = obj.vertices.length;
+
+        // 创建一个新的数组存储与每个顶点关联的值：
+        var waves = [];
+
+        for (var i = 0; i < l; i++) {
+            // 获取每个顶点
+            var v = obj.vertices[i];
+
+            // 存储一些关联的数值
+            waves.push({
+                y: v.y,
+                x: v.x,
+                z: v.z,
+                // 随机角度
+                ang: Math.random() * Math.PI / 2,
+                // 随机距离
+                amp: Math.random() * 2,
+                // 在0.016至0.048度/帧之间的随机速度
+                speed: 0.016 + Math.random() * 0.032
+            });
+        };
+        var d = obj.vertices;
+
+        for (var i = 0; i < l; i++) {
+            var v = d[i];
+
+            // 获取关联的值
+            var vprops = this.waves[i];
+
+            // 更新顶点的位置
+            if (v.x >= 0) {
+                v.x = vprops.x + Math.cos(vprops.ang) * vprops.amp;
+            } else {
+                v.x = vprops.x - Math.cos(vprops.ang) * vprops.amp;
+            }
+
+            if (v.y >= 0) {
+                v.y = vprops.y + Math.sin(vprops.ang) * vprops.amp;
+            } else {
+                v.y = vprops.y - Math.sin(vprops.ang) * vprops.amp;
+            }
         }
 
-        if (v.y >= 0) {
-            v.y = vprops.y + Math.sin(vprops.ang) * vprops.amp;
-        } else {
-            v.y = vprops.y - Math.sin(vprops.ang) * vprops.amp;
-        }
     }
+    // 获得顶点
 
     cubeGeometry.mergeVertices();
 
