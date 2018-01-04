@@ -47,7 +47,7 @@ var container, stats;
 var camera, controls, scene, renderer;
 var mesh, texture;
 var worldWidth = 100,
-    worldDepth = 200,
+    worldDepth = 100,
     worldHalfWidth = worldWidth / 2,
     worldHalfDepth = worldDepth / 2;
 var clock = new THREE.Clock();
@@ -76,25 +76,19 @@ function init() {
     controls.target.y = data[worldHalfWidth + worldHalfDepth * worldWidth] + 500;
     camera.position.y = controls.target.y + 2000;
     camera.position.x = 2000;
-    var geometry = new THREE.PlaneBufferGeometry(2500, 2500, 3, 3);
+    var d = 30;
+    var geometry = new THREE.PlaneBufferGeometry(7500, 7500, worldWidth, worldHalfDepth);
     geometry.rotateX(-Math.PI / 2);
     var vertices = geometry.attributes.position.array;
     console.log(geometry.attributes.position.array);
+    console.log(data);
     perlin = new ImprovedNoise();
-    for (var i = 36, j = 24, l = vertices.length; i < l; i++, j += 3) {
-        // vertices[j + 1] = data[i] * 10;
-        // if (j > 36) {
-        //     return
-        // }
-        if (j > 37) {
-            vertices[j + 1] = 0;
-            console.log(vertices[j + 1]);
-        }
-        vertices[j + 1] = Math.random() * 500;
 
+    for (var j = 0, i = 0, l = vertices.length; j < l; i++, j += 3) {
 
-
-        // vertices[j + 1] += Math.abs(perlin.noise(Math.random(), Math.random(), Math.random())) * 10;
+        // vertices[j + 1] = perlin.noise(0, 0, Math.random()) * 2000;
+        vertices[j + 1] = data[i] * 50;
+        // console.log(vertices[j + 1]);
     }
 
     // for (var i = 0, l = vertices.length; i < l; i++) {
@@ -139,20 +133,19 @@ function generateHeight(width, height) {
 
         perlin = new ImprovedNoise(),
         quality = 1,
-        z = Math.random() * 100;
+        z = Math.random();
 
 
-    for (var j = 0; j < 4; j++) {
+    for (var j = 0; j < 3; j++) {
         for (var i = 0; i < size; i++) {
             var x = i % width,
                 y = ~~(i / width);
-            data[i] += Math.abs(perlin.noise(x / quality, y / quality, z) * quality * 1.75);
+            data[i] += Math.abs(perlin.noise(x / quality, y / quality, z) * quality * 2);
         }
-        quality *= 3;
-    }
-    // console.log(data);
-    return data;
 
+        quality *= 6;
+    }
+    return data;
 }
 
 // function generateTexture(data, width, height) {
